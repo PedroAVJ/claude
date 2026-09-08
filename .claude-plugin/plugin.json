@@ -1,0 +1,24 @@
+{
+  "name": "claude",
+  "version": "0.5.21",
+  "description": "Work with Claude conversation workflows, Claude Design, visual explainers, max-effort verified second opinions, and Remote Control under one namespace.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/claude",
+  "repository": "https://github.com/PedroAVJ/claude",
+  "license": "MIT",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-design",
+    "anthropic",
+    "conversation-relay",
+    "design-systems",
+    "explainer",
+    "oracle",
+    "claude-fable-5-1"
+  ],
+  "skills": "./skills/"
+}

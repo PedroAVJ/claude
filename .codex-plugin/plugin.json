@@ -1,0 +1,51 @@
+{
+  "name": "claude",
+  "version": "0.5.21",
+  "description": "Talk with Claude Fable 5.1, author in Claude Design, create visual explainers, request max-effort verified second opinions, and operate Claude Code Remote Control.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/claude",
+  "repository": "https://github.com/PedroAVJ/claude",
+  "license": "MIT",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-design",
+    "anthropic",
+    "conversation-relay",
+    "design-systems",
+    "explainer",
+    "oracle",
+    "claude-fable-5-1",
+    "model-verification",
+    "remote-control"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Claude",
+    "shortDescription": "Conversation, design, explainers, and Oracle",
+    "longDescription": "Address Claude naturally for persistent high-effort Fable 5.1 conversations, create and edit through Claude Design with Git-backed history, produce polished visual explainers, request fail-closed max-effort second opinions, and operate Claude Code Remote Control under one namespace.",
+    "developerName": "PedroAVJ",
+    "category": "AI",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://claude.com/",
+    "privacyPolicyURL": "https://www.anthropic.com/legal/privacy",
+    "termsOfServiceURL": "https://www.anthropic.com/legal/consumer-terms",
+    "defaultPrompt": [
+      "Hey Claude, what do you think about this?",
+      "Hey Claude, design this with Fable 5.1",
+      "Ask Oracle for Claude's second opinion"
+    ],
+    "brandColor": "#D97757",
+    "composerIcon": "./assets/claude-plugin.svg",
+    "logo": "./assets/claude-plugin.svg",
+    "screenshots": []
+  }
+}

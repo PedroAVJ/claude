@@ -1,0 +1,4 @@
+interface:
+  display_name: "Talk to Claude"
+  short_description: "Keep Claude active across natural follow-ups"
+  default_prompt: "Use $claude to relay my exact message to Claude Fable 5.1, preserve Claude as the active addressee across unaddressed follow-ups, and continue our current conversation."

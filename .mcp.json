@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "claude-design": {
+      "type": "stdio",
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "root=$CLAUDE_PLUGIN_ROOT; if [ -z \"$root\" ]; then root=.; fi; exec \"$root/scripts/launch-claude-design-mcp\""
+      ],
+      "cwd": "."
+    }
+  }
+}

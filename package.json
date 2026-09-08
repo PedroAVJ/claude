@@ -1,0 +1,19 @@
+{
+  "name": "@pedroavj/claude",
+  "version": "0.5.21",
+  "private": true,
+  "description": "Talk with Claude, create in Claude Design, build visual explainers, request verified second opinions, and operate Remote Control.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PedroAVJ/claude.git"
+  },
+  "homepage": "https://github.com/PedroAVJ/claude#readme",
+  "bugs": {
+    "url": "https://github.com/PedroAVJ/claude/issues"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'",
+    "snapshot": "node scripts/snapshot-claude-design.mjs"
+  }
+}

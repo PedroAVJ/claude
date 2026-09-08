@@ -1,0 +1,18 @@
+{
+  "name": "claude-design-mcp",
+  "version": "1.0.0-pedro.1",
+  "private": true,
+  "description": "Vendored Claude Design MCP adapter with a direct token-refreshing bridge",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erdnj/claude-design-mcp.git"
+  },
+  "bin": {
+    "claude-design-mcp": "./bin/claude-design-mcp.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain Visually"
+  short_description: "Create a polished standalone HTML explainer"
+  default_prompt: "Use $explain to turn this topic into a polished standalone visual HTML explainer."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design with Claude"
+  short_description: "Fable 5.1 authoring and Claude Design resources"
+  default_prompt: "Use $design to have Fable 5.1 create or change a concrete design artifact, or to inspect a specific Claude Design resource; keep ordinary product conversation in $claude."

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Oracle icon">
+  <defs>
+    <linearGradient id="oracle-bg" x1="42" y1="24" x2="220" y2="236" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#121A20"/>
+      <stop offset="0.52" stop-color="#0D2B2A"/>
+      <stop offset="1" stop-color="#101115"/>
+    </linearGradient>
+    <radialGradient id="oracle-glow" cx="128" cy="128" r="82" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7FF7D4" stop-opacity="0.92"/>
+      <stop offset="0.42" stop-color="#0EA37F" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#0EA37F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#oracle-bg)"/>
+  <circle cx="128" cy="128" r="92" fill="url(#oracle-glow)"/>
+  <path d="M48 128C67.4 91.6 94.2 73.4 128.4 73.4C162.1 73.4 188.6 91.6 208 128C188.6 164.4 162.1 182.6 128.4 182.6C94.2 182.6 67.4 164.4 48 128Z" fill="#F7FFF9"/>
+  <path d="M66.4 128C82.8 101.7 103.4 88.6 128.2 88.6C152.8 88.6 173.2 101.7 189.6 128C173.2 154.3 152.8 167.4 128.2 167.4C103.4 167.4 82.8 154.3 66.4 128Z" fill="#10201F"/>
+  <circle cx="128" cy="128" r="42" fill="#0EA37F"/>
+  <circle cx="128" cy="128" r="22" fill="#F7FFF9"/>
+  <circle cx="139" cy="117" r="8" fill="#A8FFE7"/>
+  <path d="M178 176H126C115 176 106 185 106 196V205C106 211.6 111.4 217 118 217H172L198 235V196C198 185 189 176 178 176Z" fill="#F7FFF9"/>
+  <path d="M130 197H166" stroke="#0EA37F" stroke-width="10" stroke-linecap="round"/>
+  <path d="M184 197H185" stroke="#0EA37F" stroke-width="10" stroke-linecap="round"/>
+</svg>

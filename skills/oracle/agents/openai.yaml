@@ -1,0 +1,7 @@
+interface:
+  display_name: "Oracle"
+  short_description: "Get Claude Fable 5.1's verified second opinion"
+  icon_small: "./assets/oracle-icon.svg"
+  icon_large: "./assets/oracle-icon.svg"
+  brand_color: "#0EA37F"
+  default_prompt: "Use $oracle to gather verified context, ask Claude Fable 5.1 for a fail-closed second opinion, and return Codex's grounded verdict; if Fable is unavailable, report failure and do not return an Oracle answer."

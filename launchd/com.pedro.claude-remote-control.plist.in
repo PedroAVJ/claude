@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.pedro.claude-remote-control</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>@CLAUDE@</string>
+        <string>remote-control</string>
+        <string>--remote-control-session-name-prefix</string>
+        <string>@SESSION_PREFIX@</string>
+        <string>--permission-mode</string>
+        <string>@PERMISSION_MODE@</string>
+        <string>--spawn</string>
+        <string>same-dir</string>
+        <string>--capacity</string>
+        <string>@CAPACITY@</string>
+        <string>--debug-file</string>
+        <string>@DEBUG_FILE@</string>
+        <string>--create-session-in-dir</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>@WORKSPACE@</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>@HOME@</string>
+        <key>PATH</key>
+        <string>@PATH@</string>
+        <key>CLAUDE_REMOTE_CONTROL_WORKSPACE</key>
+        <string>@WORKSPACE@</string>
+        <key>CLAUDE_CODE_ARTIFACT</key>
+        <string>@ARTIFACT@</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <key>StandardOutPath</key>
+    <string>@HOME@/Library/Logs/Claude Remote Control/service.log</string>
+    <key>StandardErrorPath</key>
+    <string>@HOME@/Library/Logs/Claude Remote Control/service-error.log</string>
+</dict>
+</plist>
