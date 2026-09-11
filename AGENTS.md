@@ -59,9 +59,10 @@
 - Bump the Codex manifest, Claude manifest, and package version together and run
   `npm test` before publishing.
 
-- In Codex, resolve each request independently: no participant name means Codex,
-  even after a Claude/Fable answer. Claude and Fable alias one participant.
-  Preserve stored Fable conversation continuity without persistent ownership.
+- In Codex, resolve the participant once per one-to-one thread. Claude and Fable
+  alias one participant; when selected by the first substantive request, that
+  participant owns every later turn, including unnamed follow-ups. Do not
+  simulate a group chat or return multiple participant voices in one thread.
 - Shared roles come from the caller's live Codex role registry, passed as private
   selected-role contracts. Keep participant model selection separate from role
   responsibility; decline incompatible role requirements rather than downgrade.

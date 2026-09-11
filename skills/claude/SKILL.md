@@ -1,6 +1,6 @@
 ---
 name: claude
-description: "Required for ordinary conversation addressed to Claude or Fable, including discussion of products, UX, interactions, interfaces, workflows, and visual ideas when the user is not explicitly asking Claude to design or change an artifact and is not operating a named Claude Design resource. A request with no participant name always addresses Codex, regardless of who answered previously. Names and configured roles are independent. From Codex, relay the intended message verbatim to Claude Fable 5.1 and return Claude's clearly labeled response."
+description: "Required for an ordinary one-to-one thread whose participant is Claude or Fable, including discussion of products, UX, interactions, interfaces, workflows, and visual ideas when the user is not explicitly asking Claude to design or change an artifact and is not operating a named Claude Design resource. Claude/Fable owns every follow-up in that thread, including unnamed messages. Names and configured roles are independent. From Codex, relay the intended message verbatim to Claude Fable 5.1 and return its response without inventing a group chat."
 metadata:
   author: PedroAVJ
   origin: loadout-plugin
@@ -43,51 +43,57 @@ Examples:
 After choosing the correct surface, resolve the addressee and answer ownership:
 
 - “Hey Claude…”, “Claude, what do you think…”, “ask Claude…”, “tell Fable…”,
-  and requests explicitly assigning work to Fable use this skill. An unaddressed
-  follow-up goes to Codex even after a Fable answer.
+  and requests explicitly assigning the first substantive turn to Fable establish
+  Claude/Fable as the participant for this thread. Every later message remains
+  in this skill, including an unaddressed follow-up, correction, reaction, or
+  role assignment.
 - A bare `Claude` or `Fable` at the beginning or end of an ordinary request is
   an explicit address even when dictated text omits the comma, punctuation,
   capitalization, or clean grammar. For example, `Claude what is that called a
   motto` is Claude-addressed. Never require vocative punctuation before
   routing it. A model name used as the object of a Codex-directed question,
   such as `Codex, why didn't you use Claude?`, remains Codex-addressed.
-- Messages addressed to Codex remain with Codex even if they discuss Claude, a
-  Claude plugin, or a previous Claude answer. Do not route solely because the
-  word “Claude” appears.
+- A mention or apparent address to Codex after Claude owns the thread does not
+  transfer the thread or add Codex as a second speaker. Treat it as a reference
+  or a request for Claude to consult Codex. To talk directly with Codex, the user
+  starts a separate Codex thread. Likewise, a Codex-owned thread does not become
+  Claude-owned because Claude is mentioned after its first substantive turn.
 - An exclusively Claude-addressed request receives Claude's response only;
   never substitute Codex's opinion for it.
-- A mixed Codex-and-Claude request receives both answers. Give Codex's
-  substantive answer immediately, before any setup, authentication, tool work,
-  or Claude relay. Then obtain and label Claude's answer separately. A relay
-  failure must never suppress, replace, or delay Codex's answer. Retain the
-  Codex answer when presenting the final result.
+- The current host has no group chat. Never return separate Codex and Claude
+  voices in one thread or label an ordinary one-to-one reply as though several
+  participants were present. If the first request names multiple prospective
+  participants, ask which one should own the thread or use separate threads.
+  The owner may consult another model internally and remains the sole speaker.
 
-### Resolve each request independently
+### Keep one participant for the whole thread
 
 Codex names the current main assistant, not a fixed model version. Claude and
 Fable are interchangeable names for the same `claude-fable-5-1` participant.
 Spark names `gpt-5.3-codex-spark` and belongs to the Codex named-participant
 route; never impersonate Spark with Fable.
 
-A request that names no participant is addressed to Codex, regardless of who
-answered the previous request. This replaces persistent speaker ownership.
-Continuing the stored Fable session when Fable is addressed again preserves
-context, not ownership of intervening requests.
+A new one-to-one thread resolves its participant from the first substantive user
+request. If that request addresses Claude or Fable, Claude/Fable owns the whole
+thread and the stored Fable session carries every later turn. The user never has
+to repeat the participant's name. If the first substantive request names no
+participant, Codex owns that separate thread.
 
 Resolve an actual addressee from conversational intent, not every occurrence of
 a model name. A quoted name or “Codex, why didn't you use Claude?” does not
 select Claude. A bare leading or trailing Claude/Fable still counts as an
-address. Multiple named participants receive their assigned contributions.
+address when resolving a new thread. Later participant names never alter the
+owner of an established one-to-one thread.
 
 Examples:
 
 - `Thoughts, Fable?` -> Fable.
-- After Fable answers, `What does that mean for my jobs?` -> Codex.
+- After Fable answers, `What does that mean for my jobs?` -> Fable.
 - `Fable, continue that explanation.` -> resume the same Fable conversation.
-- `Spark, check this file.` -> Spark through its actual runtime.
-- `Claude and Codex, each review this.` -> both, with separate attribution.
+- `Spark, check this file.` in a Fable thread -> Fable may consult Spark but remains the speaker.
+- `Claude and Codex, each review this.` as the first request -> choose one owner or use separate threads.
 - `Fable, as the Intern, summarize this.` -> Fable with the configured Intern role.
-- `Intern, summarize this.` -> Codex with the configured Intern role.
+- `Intern, summarize this.` later in the Fable thread -> Fable with the configured Intern role.
 
 ### Shared configured roles
 
@@ -110,6 +116,8 @@ Supply the user's message on stdin as usual. The relay pins Fable, applies the
 role's exact supported effort and instructions, and keeps its conversation
 separate from unassigned Fable and other role contracts. Ordinary Fable remains
 high effort. Report the returned role and actual effort in the attribution.
+When the role or effort is not material to the user's request, keep that
+execution metadata internal so it does not become a participant label.
 
 If the selected role permits delegation, resolve only its permitted configured
 individual delegates with the same registry helper and add
@@ -123,14 +131,15 @@ Unsupported role execution constraints fail before launching; do not silently
 ignore or rewrite them. Keep role files and their contents out of public Git,
 logs, and replies. Do not change the user's registry to perform a dispatch.
 
-### Repair a mistaken speaker switch
+### Repair a mistaken thread-participant switch
 
-If the user says that a prior turn was meant for Claude after Codex answered it,
-do not treat the correction as a new substantive question and do not make him
-repeat himself. Locate the most recent user message that was wrongly answered
-by Codex, relay that original message verbatim to the current Claude
-conversation, and return Claude's answer. Relay the correction itself only if
-it also contains a new question the user explicitly wants Claude to answer.
+If Codex answers any turn in a Claude-owned thread, do not treat the user's
+correction as a new substantive question and do not make him repeat himself.
+Locate the most recent user message that was wrongly answered by Codex, relay
+that original message verbatim to the current Claude conversation, and return
+Claude's answer. Relay the correction itself only if it also contains a new
+question the user explicitly wants Claude to answer. Claude remains the thread
+participant afterward.
 
 ## Host scope
 
@@ -142,10 +151,10 @@ nested execution.
 ## Relay contract
 
 - Send the user message intended for Claude verbatim. Normally that is the user's
-  latest message. During mistaken-speaker repair, it is the original unanswered
+  latest message in a Claude-owned thread. During mistaken-speaker repair, it is the original unanswered
   user message identified above. Do not answer it yourself, polish it,
   translate it, extract numbered questions, or replace its framing.
-- Never substitute Codex for an exclusively Claude-addressed request. The
+- Never substitute Codex for a request in a Claude-owned thread. The
   Claude response must come from Fable 5.1.
 - Treat corrections, objections, and reactions as follow-ups. Continue the
   current Fable session for this Codex thread by default.
@@ -158,7 +167,7 @@ nested execution.
 - Add context only when Fable cannot resolve a referent from the persisted
   conversation. Put the smallest factual addition after the verbatim message
   under `[Context from Codex]`. Fable may use it, but the user's normal response
-  remains only the labeled verbatim Fable result.
+  remains only the unlabeled verbatim Fable result.
 - Rough dictation can contain a stray word that conflicts with the established
   subject. Keep the user's message verbatim, but when the exact prior conversation
   makes the intended referent clear, add one terse internal clarification and
@@ -257,11 +266,11 @@ to restore authentication.
 ## Return the answer
 
 Parse the helper's JSON and return its `result` field verbatim, preserving its
-words and Markdown. For ordinary conversation, label it `Claude Fable 5.1 (high, verbatim)` so the
-speaker is unambiguous in the Codex thread. For a role request, include the
-returned role and actual effort, for example `Fable — Intern (low, verbatim)`. Do not append a Codex verdict,
-summary, evidence check, or alternative answer to a Claude-only request unless
-the user separately asks for Codex's view. For a mixed request, preserve the
-already-given Codex answer and then present the separately labeled Claude
-response. Do not append relay context, reconstructed transcript, memory
-citations, or tool narration unless the user explicitly asks to inspect them.
+words and Markdown. In a one-to-one Claude-owned thread, return the answer
+without a `Claude`, `Fable`, or model label; the thread already identifies its
+participant, and the current host has no group chat to disambiguate. For a role
+request, report the role and actual effort only when that execution metadata is
+material to the user's request. Do not append a Codex verdict, summary, evidence
+check, alternative answer, second participant voice, relay context,
+reconstructed transcript, memory citations, or tool narration unless the user
+explicitly asks to inspect them.

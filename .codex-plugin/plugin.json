@@ -1,6 +1,6 @@
 {
   "name": "claude",
-  "version": "0.5.22",
+  "version": "0.5.23",
   "description": "Talk with Claude Fable 5.1, author in Claude Design, create visual explainers, request max-effort verified second opinions, and operate Claude Code Remote Control.",
   "author": {
     "name": "PedroAVJ",
