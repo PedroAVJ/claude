@@ -133,16 +133,17 @@ class AskFableContractTests(unittest.TestCase):
         ):
             self.assertNotIn(phrase, normalized)
 
-    def test_speaker_ownership_persists_until_an_explicit_switch(self) -> None:
+    def test_unnamed_requests_return_to_codex_without_losing_fable_session(self) -> None:
         normalized = " ".join(self.skill.split())
         for phrase in (
-            "Treat the conversation as having one active addressee",
-            "If the current message names nobody, inherit the active addressee",
-            "Never infer a switch from a topic change",
-            "Once the user switches with “Codex,” unaddressed follow-ups remain Codex-owned",
-            "After Claude answers, `What does that mean for my jobs?` -> still Claude",
+            "A request that names no participant is addressed to Codex, regardless of who answered the previous request",
+            "This replaces persistent speaker ownership",
+            "Continuing the stored Fable session",
+            "After Fable answers, `What does that mean for my jobs?` -> Codex",
+            "`Intern, summarize this.` -> Codex with the configured Intern role",
         ):
             self.assertIn(phrase, normalized)
+        self.assertNotIn("inherit the active addressee", normalized)
 
     def test_misrouted_claude_turn_is_repaired_without_repetition(self) -> None:
         normalized = " ".join(self.skill.split())

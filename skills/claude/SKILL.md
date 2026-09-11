@@ -1,6 +1,6 @@
 ---
 name: claude
-description: "Required for ordinary conversation addressed to Claude or Fable, including discussion of products, UX, interactions, interfaces, workflows, and visual ideas when the user is not explicitly asking Claude to design or change an artifact and is not operating a named Claude Design resource. Speaker ownership persists until the user explicitly switches to Codex or addresses both. From Codex, relay the intended message verbatim to Claude Fable 5.1 and return Claude's clearly labeled response."
+description: "Required for ordinary conversation addressed to Claude or Fable, including discussion of products, UX, interactions, interfaces, workflows, and visual ideas when the user is not explicitly asking Claude to design or change an artifact and is not operating a named Claude Design resource. A request with no participant name always addresses Codex, regardless of who answered previously. Names and configured roles are independent. From Codex, relay the intended message verbatim to Claude Fable 5.1 and return Claude's clearly labeled response."
 metadata:
   author: PedroAVJ
   origin: loadout-plugin
@@ -43,8 +43,8 @@ Examples:
 After choosing the correct surface, resolve the addressee and answer ownership:
 
 - “Hey Claude…”, “Claude, what do you think…”, “ask Claude…”, “tell Fable…”,
-  and every unaddressed follow-up while Claude owns the conversation use this
-  skill.
+  and requests explicitly assigning work to Fable use this skill. An unaddressed
+  follow-up goes to Codex even after a Fable answer.
 - A bare `Claude` or `Fable` at the beginning or end of an ordinary request is
   an explicit address even when dictated text omits the comma, punctuation,
   capitalization, or clean grammar. For example, `Claude what is that called a
@@ -62,34 +62,66 @@ After choosing the correct surface, resolve the addressee and answer ownership:
   failure must never suppress, replace, or delay Codex's answer. Retain the
   Codex answer when presenting the final result.
 
-### Persistent speaker ownership is mandatory
+### Resolve each request independently
 
-Treat the conversation as having one active addressee. Determine it in this
-order:
+Codex names the current main assistant, not a fixed model version. Claude and
+Fable are interchangeable names for the same `claude-fable-5-1` participant.
+Spark names `gpt-5.3-codex-spark` and belongs to the Codex named-participant
+route; never impersonate Spark with Fable.
 
-1. If the user explicitly addresses Claude or Fable, Claude becomes the active
-   addressee.
-2. If the user explicitly addresses Codex, Codex becomes the active addressee.
-3. If the user explicitly asks both, the turn is mixed; afterward, use whichever
-   speaker the user next addresses explicitly.
-4. If the current message names nobody, inherit the active addressee from the
-   preceding exchange. Never infer a switch from a topic change, a new question,
-   or the absence of the word “Claude.”
+A request that names no participant is addressed to Codex, regardless of who
+answered the previous request. This replaces persistent speaker ownership.
+Continuing the stored Fable session when Fable is addressed again preserves
+context, not ownership of intervening requests.
 
-A response labeled `Claude Fable 5.1 (high, verbatim)` is strong evidence that
-Claude owns the conversation that follows. Once the user switches with “Codex,”
-unaddressed follow-ups remain Codex-owned until they address Claude again. A
-mere mention of either model, its plugin, or something it previously said is
-not necessarily an address; use the grammatical request and the established
-speaker state.
+Resolve an actual addressee from conversational intent, not every occurrence of
+a model name. A quoted name or “Codex, why didn't you use Claude?” does not
+select Claude. A bare leading or trailing Claude/Fable still counts as an
+address. Multiple named participants receive their assigned contributions.
 
 Examples:
 
-- `Thoughts Claude?` -> Claude owns the turn.
-- After Claude answers, `What does that mean for my jobs?` -> still Claude.
-- `Codex, verify that against the source.` -> ownership switches to Codex.
-- After Codex answers, `Okay, so what should I do?` -> still Codex.
-- `Both you and Claude?` -> mixed turn.
+- `Thoughts, Fable?` -> Fable.
+- After Fable answers, `What does that mean for my jobs?` -> Codex.
+- `Fable, continue that explanation.` -> resume the same Fable conversation.
+- `Spark, check this file.` -> Spark through its actual runtime.
+- `Claude and Codex, each review this.` -> both, with separate attribution.
+- `Fable, as the Intern, summarize this.` -> Fable with the configured Intern role.
+- `Intern, summarize this.` -> Codex with the configured Intern role.
+
+### Shared configured roles
+
+A name selects the participant; a role assigns its responsibility. Resolve roles
+through `codex:sub-agents` and its read-only `read-roles.py` helper from the live
+registry. Do not bundle another role catalog, invent an unconfigured role, or
+substitute a Codex agent for a Fable role. Preserve the complete instructions,
+reasoning effort, and delegation constraints. The user's explicit participant
+selection overrides a role's model selection; other incompatible requirements
+make that participant decline the role, never lower the required effort.
+
+For Fable, save the selected-role helper output to an ignored, private task file
+and invoke the existing relay with that contract:
+
+```bash
+python3 <claude-skill-dir>/scripts/ask_fable.py --role-contract <private-role.json>
+```
+
+Supply the user's message on stdin as usual. The relay pins Fable, applies the
+role's exact supported effort and instructions, and keeps its conversation
+separate from unassigned Fable and other role contracts. Ordinary Fable remains
+high effort. Report the returned role and actual effort in the attribution.
+
+If the selected role permits delegation, resolve only its permitted configured
+individual delegates with the same registry helper and add
+`--delegate-role-contract <private-delegate.json>` for each. These become native
+Claude agents with the configured responsibility, Fable model, and reasoning
+effort. Honor narrower allowed-delegation instructions; the adapter does not
+infer permissions from a prose role description. Individual roles disable native
+Agent/Task tools and also receive an instruction against shell or cross-thread
+delegation. Do not claim every possible delegation mechanism is tool-disabled.
+Unsupported role execution constraints fail before launching; do not silently
+ignore or rewrite them. Keep role files and their contents out of public Git,
+logs, and replies. Do not change the user's registry to perform a dispatch.
 
 ### Repair a mistaken speaker switch
 
@@ -225,8 +257,9 @@ to restore authentication.
 ## Return the answer
 
 Parse the helper's JSON and return its `result` field verbatim, preserving its
-words and Markdown. Always label it `Claude Fable 5.1 (high, verbatim)` so the
-speaker is unambiguous in the Codex thread. Do not append a Codex verdict,
+words and Markdown. For ordinary conversation, label it `Claude Fable 5.1 (high, verbatim)` so the
+speaker is unambiguous in the Codex thread. For a role request, include the
+returned role and actual effort, for example `Fable — Intern (low, verbatim)`. Do not append a Codex verdict,
 summary, evidence check, or alternative answer to a Claude-only request unless
 the user separately asks for Codex's view. For a mixed request, preserve the
 already-given Codex answer and then present the separately labeled Claude

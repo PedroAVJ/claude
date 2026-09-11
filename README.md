@@ -15,11 +15,15 @@ This project is unofficial and is not affiliated with Anthropic.
   address when speech-to-text omits vocative punctuation or produces rough
   grammar. A model name mentioned inside a Codex-directed question does not
   switch the addressee.
-- Speaker ownership persists across turns. After the user addresses Claude,
-  unaddressed follow-ups remain Claude-owned until they explicitly address
-  Codex; after that switch, unaddressed follow-ups remain Codex-owned until he
-  addresses Claude again. A topic change does not switch speakers.
-- If Codex mistakenly answers a Claude-owned turn and the user corrects it, the
+- A request that names no participant always addresses Codex, regardless of who
+  answered previously. Explicitly addressing Claude or Fable resumes the same
+  stored Fable conversation; session continuity does not reserve future turns.
+- Names and roles are independent. Fable can use the same configured role
+  contracts as Codex and Spark through `ask_fable.py --role-contract`; the
+  runtime preserves the role's reasoning effort and instructions and rejects
+  incompatible requirements without downgrading. The user's role registry
+  remains the authority; no role catalog is copied into this plugin.
+- If Codex mistakenly answers an explicitly Claude-addressed turn and the user corrects it, the
   skill relays the original unanswered user message to the current Claude
   conversation instead of making the user repeat it.
 - Cross-thread context and reconstruction stay private to the relay. Normal
@@ -92,8 +96,8 @@ CLI state before retrying the original message in its existing conversation.
 
 - `skills/claude` continues a high-effort, verbatim Fable 5.1 conversation. Its
   repeated `claude:claude` internal identifier deliberately makes natural
-  “Hey Claude…” addressing and persistent unaddressed follow-ups win skill
-  routing; users never need to repeat the addressee.
+  “Hey Claude…” and “Fable…” addressing select this lane; unaddressed requests
+  remain with Codex.
 - `skills/design` authors through Claude Design and extracts through a read-only
   connector.
 - `skills/explain` creates polished standalone HTML explainers.

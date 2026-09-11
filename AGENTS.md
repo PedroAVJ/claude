@@ -58,3 +58,10 @@
   credential path.
 - Bump the Codex manifest, Claude manifest, and package version together and run
   `npm test` before publishing.
+
+- In Codex, resolve each request independently: no participant name means Codex,
+  even after a Claude/Fable answer. Claude and Fable alias one participant.
+  Preserve stored Fable conversation continuity without persistent ownership.
+- Shared roles come from the caller's live Codex role registry, passed as private
+  selected-role contracts. Keep participant model selection separate from role
+  responsibility; decline incompatible role requirements rather than downgrade.

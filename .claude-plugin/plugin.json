@@ -1,6 +1,6 @@
 {
   "name": "claude",
-  "version": "0.5.21",
+  "version": "0.5.22",
   "description": "Work with Claude conversation workflows, Claude Design, visual explainers, max-effort verified second opinions, and Remote Control under one namespace.",
   "author": {
     "name": "PedroAVJ",

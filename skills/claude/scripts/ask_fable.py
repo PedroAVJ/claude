@@ -22,6 +22,7 @@ from claude_host import (  # noqa: E402
     assert_model_produced_output,
     claude_environment,
 )
+from shared_role import RoleContractError, prepare_role  # noqa: E402
 
 
 FABLE_MODEL = "claude-fable-5-1"
@@ -74,7 +75,7 @@ def _codex_thread_marker() -> str:
     return marker
 
 
-def _state_path() -> pathlib.Path:
+def _state_path(role_scope: str | None = None) -> pathlib.Path:
     marker_hash = hashlib.sha256(_codex_thread_marker().encode("utf-8")).hexdigest()
     configured = os.environ.get("FABLE_RELAY_STATE_DIR")
     root = (
@@ -86,7 +87,8 @@ def _state_path() -> pathlib.Path:
         / "claude-code-plugin"
         / "ask-fable"
     )
-    return root / f"{marker_hash}.json"
+    suffix = f"-role-{role_scope}" if role_scope else ""
+    return root / f"{marker_hash}{suffix}.json"
 
 
 def _load_session(path: pathlib.Path) -> str | None:
@@ -101,12 +103,12 @@ def _load_session(path: pathlib.Path) -> str | None:
     return session_id
 
 
-def _save_session(path: pathlib.Path, session_id: str) -> None:
+def _save_session(path: pathlib.Path, session_id: str, effort: str = EFFORT) -> None:
     path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     temporary = path.with_suffix(".tmp")
     temporary.write_text(
         json.dumps(
-            {"session_id": session_id, "model": FABLE_MODEL, "effort": EFFORT},
+            {"session_id": session_id, "model": FABLE_MODEL, "effort": effort},
             separators=(",", ":"),
         )
         + "\n",
@@ -116,7 +118,7 @@ def _save_session(path: pathlib.Path, session_id: str) -> None:
     temporary.replace(path)
 
 
-def _command(session_id: str, continued: bool) -> list[str]:
+def _command(session_id: str, continued: bool, role: dict[str, Any] | None = None) -> list[str]:
     claude = shutil.which("claude")
     if claude is None:
         raise RelayError("Claude Code is not installed")
@@ -125,10 +127,10 @@ def _command(session_id: str, continued: bool) -> list[str]:
         "--model",
         FABLE_MODEL,
         "--effort",
-        EFFORT,
+        role["effort"] if role else EFFORT,
         "--print",
         "--append-system-prompt",
-        SYSTEM_PROMPT,
+        SYSTEM_PROMPT + (role["instructions"] if role else ""),
         "--tools",
         "default",
         "--output-format",
@@ -137,6 +139,11 @@ def _command(session_id: str, continued: bool) -> list[str]:
         "--prompt-suggestions",
         "false",
     ]
+    if role:
+        if not role["can_delegate"]:
+            command.extend(["--disallowedTools", "Agent", "Task"])
+        elif role["definitions"]:
+            command.extend(["--agents", json.dumps(role["definitions"])])
     command.extend(["--resume" if continued else "--session-id", session_id])
     return command
 
@@ -166,7 +173,7 @@ def _validate_payload(payload: Any, expected_session_id: str) -> str:
     return result
 
 
-def _validate_runtime_environment(events: list[Any]) -> dict[str, Any]:
+def _validate_runtime_environment(events: list[Any], role: dict[str, Any] | None = None) -> dict[str, Any]:
     initialization = next(
         (
             event
@@ -191,6 +198,8 @@ def _validate_runtime_environment(events: list[Any]) -> dict[str, Any]:
         else set()
     )
     available_tools = set(tools) if isinstance(tools, list) else set()
+    if role and not role["can_delegate"] and available_tools & {"Agent", "Task"}:
+        raise RelayError("Claude Code did not disable native delegation for the individual role")
     missing_builtins = sorted(set(REQUIRED_BUILTIN_TOOLS) - available_tools)
     if missing_builtins:
         raise RelayError(
@@ -245,11 +254,17 @@ def _validate_runtime_environment(events: list[Any]) -> dict[str, Any]:
     return result
 
 
-def relay(prompt: str, *, force_new: bool = False) -> dict[str, Any]:
+def relay(prompt: str, *, force_new: bool = False, role_contract: pathlib.Path | None = None,
+          delegate_role_contracts: list[pathlib.Path] | None = None) -> dict[str, Any]:
     if not prompt.strip():
         raise RelayError("prompt is empty")
 
-    state_path = _state_path()
+    try:
+        role = prepare_role(role_contract, delegate_role_contracts or [], model=FABLE_MODEL, default_effort=EFFORT)
+    except RoleContractError as error:
+        raise RelayError(str(error)) from error
+    effort = role["effort"] if role else EFFORT
+    state_path = _state_path(role["scope"] if role else None)
     stored_session = _load_session(state_path)
     continued = stored_session is not None and not force_new
     session_id = stored_session if continued else str(uuid.uuid4())
@@ -257,12 +272,12 @@ def relay(prompt: str, *, force_new: bool = False) -> dict[str, Any]:
 
     environment = claude_environment()
     environment.pop("CLAUDECODE", None)
-    environment["CLAUDE_CODE_EFFORT_LEVEL"] = EFFORT
+    environment["CLAUDE_CODE_EFFORT_LEVEL"] = effort
     claude = shutil.which("claude")
     if claude is None:
         raise RelayError("Claude Code is not installed")
     completed = subprocess.run(
-        _command(session_id, continued),
+        _command(session_id, continued, role),
         input=prompt,
         text=True,
         capture_output=True,
@@ -278,16 +293,19 @@ def relay(prompt: str, *, force_new: bool = False) -> dict[str, Any]:
     except json.JSONDecodeError as error:
         raise RelayError(f"Claude Code returned invalid streaming JSON: {error}") from error
 
-    payload = _validate_runtime_environment(events)
+    payload = _validate_runtime_environment(events, role)
     result = _validate_payload(payload, session_id)
-    _save_session(state_path, session_id)
-    return {
+    _save_session(state_path, session_id, effort)
+    response = {
         "result": result,
         "session_id": session_id,
         "continued": continued,
         "model": FABLE_MODEL,
-        "effort": EFFORT,
+        "effort": effort,
     }
+    if role:
+        response["role"] = role["key"]
+    return response
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -299,10 +317,15 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Start a new Fable conversation after a successful response.",
     )
+    parser.add_argument("--role-contract", type=pathlib.Path,
+                        help="Private selected-role JSON from codex:sub-agents/read-roles.py")
+    parser.add_argument("--delegate-role-contract", type=pathlib.Path, action="append", default=[],
+                        help="Private configured individual delegate role JSON; repeat as needed")
     args = parser.parse_args(argv)
     prompt = sys.stdin.read()
     try:
-        response = relay(prompt, force_new=args.new)
+        response = relay(prompt, force_new=args.new, role_contract=args.role_contract,
+                         delegate_role_contracts=args.delegate_role_contract)
     except RelayError as error:
         print(f"claude:claude: {error}", file=sys.stderr)
         return 2

@@ -1,6 +1,6 @@
 {
   "name": "@pedroavj/claude",
-  "version": "0.5.21",
+  "version": "0.5.22",
   "private": true,
   "description": "Talk with Claude, create in Claude Design, build visual explainers, request verified second opinions, and operate Remote Control.",
   "license": "MIT",
