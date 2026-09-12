@@ -30,7 +30,7 @@ class FableOracleContractTests(unittest.TestCase):
         )
 
     def test_release_version(self) -> None:
-        self.assertEqual(self.codex_manifest["version"], "0.5.23")
+        self.assertEqual(self.codex_manifest["version"], "0.5.24")
 
     def test_fable_is_the_only_oracle_model(self) -> None:
         for text in (

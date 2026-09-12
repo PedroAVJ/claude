@@ -92,26 +92,26 @@ class AskFableContractTests(unittest.TestCase):
         for phrase in (
             "ordinary conversational lane",
             "Hey Claude",
-            "Never substitute Codex for a request in a Claude-owned thread",
-            "A mention or apparent address to Codex after Claude owns the thread",
+            "Never substitute Codex for a request that explicitly invokes Claude",
+            "latest explicitly invoked turn",
             "Send the user message intended for Claude verbatim",
-            "current Fable session for this Codex thread",
+            "Reuse the current Fable session when a later turn explicitly invokes Claude",
             "return its `result` field verbatim",
-            "without a `Claude`, `Fable`, or model label",
+            "compact `Claude:` source label",
         ):
             self.assertIn(phrase, self.skill)
 
-    def test_one_to_one_thread_never_simulates_a_group_chat(self) -> None:
+    def test_claude_is_an_attributed_source_not_a_thread_participant(self) -> None:
         normalized = " ".join(self.skill.split())
         for phrase in (
-            "An exclusively Claude-addressed request receives Claude's response only",
+            "Claude/Fable is an app/model source, not an employee",
+            "It cannot own a thread",
+            "inherit an unnamed follow-up",
             "The current host has no group chat",
-            "Never return separate Codex and Claude voices in one thread",
-            "ask which one should own the thread or use separate threads",
-            "The owner may consult another model internally and remains the sole speaker",
+            "Return Claude as attributed source output",
+            "not a persistent second speaker or simulated participant",
         ):
             self.assertIn(phrase, normalized)
-        self.assertNotIn("A mixed Codex-and-Claude request receives both answers", self.skill)
 
     def test_bare_unpunctuated_claude_is_an_explicit_address(self) -> None:
         normalized = " ".join(self.skill.split())
@@ -133,26 +133,26 @@ class AskFableContractTests(unittest.TestCase):
         ):
             self.assertNotIn(phrase, normalized)
 
-    def test_unnamed_requests_stay_with_the_thread_participant(self) -> None:
+    def test_invocation_is_resolved_per_turn(self) -> None:
         normalized = " ".join(self.skill.split())
         for phrase in (
-            "Claude/Fable owns the whole thread",
-            "The user never has to repeat the participant's name",
-            "After Fable answers, `What does that mean for my jobs?` -> Fable",
-            "`Intern, summarize this.` later in the Fable thread -> Fable with the configured Intern role",
-            "Later participant names never alter the owner of an established one-to-one thread",
+            "Invoke the app explicitly on each turn",
+            "After Fable answers, `What does that mean for my jobs?` -> current host or employee; do not invoke Fable",
+            "`We were discussing Claude Code.` -> no Claude invocation",
+            "`Intern, summarize this.` after a Fable result -> the configured employee; do not infer Fable",
+            "never for later turns",
         ):
             self.assertIn(phrase, normalized)
-        self.assertNotIn("regardless of who answered the previous request", normalized)
+        self.assertNotIn("Claude/Fable owns the whole thread", normalized)
 
-    def test_misrouted_claude_turn_is_repaired_without_repetition(self) -> None:
+    def test_missed_explicit_invocation_is_repaired_without_ownership(self) -> None:
         normalized = " ".join(self.skill.split())
         for phrase in (
             "Locate the most recent user message that was wrongly answered by Codex",
             "relay that original message verbatim",
             "do not make him repeat himself",
-            "During mistaken-speaker repair, it is the original unanswered user message",
-            "Claude remains the thread participant afterward",
+            "During missed-invocation repair, it is the original unanswered user message",
+            "does not give Claude ownership of later messages",
         ):
             self.assertIn(phrase, normalized)
 
@@ -161,7 +161,7 @@ class AskFableContractTests(unittest.TestCase):
         for phrase in (
             "Retrieved threads, transcripts, summaries, memory evidence, and added relay context are private scaffolding",
             "Never quote, summarize, enumerate, cite, or expose them in commentary or the final response",
-            "the user's normal response remains only the unlabeled verbatim Fable result",
+            "do not expose the private relay context",
             "Keep the user's message verbatim",
             "tell Fable not to turn the stray token into a new topic",
             "have Fable ask one concise clarification instead",

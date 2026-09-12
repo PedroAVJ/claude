@@ -7,7 +7,7 @@ import test from "node:test";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const expected = {
   name: "claude",
-  version: "0.5.23",
+  version: "0.5.24",
   url: "https://github.com/PedroAVJ/claude",
 };
 

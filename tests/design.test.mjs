@@ -157,7 +157,7 @@ test("natural-language routing requires an explicit Claude Design entry", async 
   assert.match(ask, /Route specialized requests without stealing ordinary conversation/);
   assert.match(ask, /A topic does\s+not become Claude Design merely because it could eventually be designed/);
   assert.match(ask, /Ordinary discussion, reflection, advice, critique, and chat/);
-  assert.match(ask, /Codex-owned thread does not become\s+Claude-owned/i);
+  assert.match(ask, /Discussion\s+of Claude, Anthropic, Claude Code, Claude Design, or a Claude capability is\s+likewise not an invocation/i);
 });
 
 test("explicit Claude Design authoring includes the bounded source handoff", async () => {

@@ -9,24 +9,24 @@ This project is unofficial and is not affiliated with Anthropic.
 
 - Address Claude directly for an ordinary conversation: “Hey Claude, what do
   you think about this?” The `claude` conversation skill relays the user's exact words from Codex
-  to a persistent high-effort Fable 5.1 conversation. That first substantive
-  address makes Claude/Fable the participant for the whole one-to-one thread.
+  to a persistent high-effort Fable 5.1 session for that explicit invocation.
 - A bare leading or trailing “Claude” or “Fable” still counts as a direct
   address when speech-to-text omits vocative punctuation or produces rough
-  grammar. A model name mentioned inside a Codex-directed question does not
-  switch the addressee.
-- Every unnamed follow-up, reaction, correction, and role request stays with
-  Claude/Fable in a Claude-owned thread. A later participant name does not
-  transfer ownership; talking directly with another participant requires a
-  separate thread.
+  grammar. Discussion or mention of Claude, Anthropic, or a Claude product does
+  not invoke the app.
+- Claude/Fable is an app/model source, not an employee or persistent thread
+  participant. Each relay requires explicit per-turn intent to ask, address,
+  use, or consult it. Unnamed follow-ups stay with the current host or employee;
+  they do not automatically invoke Claude.
 - Names and roles are independent. Fable can use the same configured role
   contracts as Codex and Spark through `ask_fable.py --role-contract`; the
   runtime preserves the role's reasoning effort and instructions and rejects
   incompatible requirements without downgrading. The user's role registry
   remains the authority; no role catalog is copied into this plugin.
-- If Codex mistakenly answers an explicitly Claude-addressed turn and the user corrects it, the
-  skill relays the original unanswered user message to the current Claude
-  conversation instead of making the user repeat it.
+- If Codex mistakenly answers an explicitly Claude-addressed turn and the user
+  corrects it, the skill may repair that one missed invocation by relaying the
+  original unanswered user message instead of making the user repeat it. The
+  repair does not transfer thread ownership.
 - Cross-thread context and reconstruction stay private to the relay. Normal
   responses contain only Claude's answer; raw transcripts, summaries,
   memory evidence, and added context appear only when the user explicitly asks to
@@ -41,10 +41,9 @@ This project is unofficial and is not affiliated with Anthropic.
   configured Near context tools when available. Near is optional; its absence
   never blocks a conversation. The relay keeps retrieval details private
   unless the user asks to inspect them.
-- The host has no group chat and never returns separate Codex and Claude voices
-  in one thread. If the first request names multiple prospective participants,
-  choose one owner or use separate threads. The owner may consult another model
-  internally without changing the thread participant.
+- The host has no group chat. A Claude relay is returned as compactly attributed
+  source output inside the current host or employee's thread, not as a second
+  persistent speaker.
 - Talking with Claude about a product, UX, interaction, workflow, screen, or
   visual idea stays in the ordinary `claude` conversation lane. Asking what
   Claude thinks, requesting critique, or exploring an interface concept does
@@ -62,8 +61,8 @@ This project is unofficial and is not affiliated with Anthropic.
   personal records, unrelated source, broader sharing, or publication.
 - Ask for a visual or HTML explanation to use `explain`.
 - Ask Oracle for an evidence-grounded Fable 5.1 second opinion at max effort.
-- Address Codex explicitly when the request is for Codex rather than Claude;
-  merely mentioning Claude does not reroute the request.
+- Merely mentioning Claude does not reroute the request; invoke Claude explicitly
+  on each turn that should be sent to the app.
 
 ## Model and host boundaries
 
@@ -98,8 +97,8 @@ CLI state before retrying the original message in its existing conversation.
 
 - `skills/claude` continues a high-effort, verbatim Fable 5.1 conversation. Its
   repeated `claude:claude` internal identifier deliberately makes natural
-  “Hey Claude…” and “Fable…” addressing select this lane for a new thread;
-  unaddressed follow-ups remain with Fable for that whole thread.
+  “Hey Claude…” and “Fable…” addressing select this lane for that turn. It does
+  not claim later unnamed follow-ups.
 - `skills/design` authors through Claude Design and extracts through a read-only
   connector.
 - `skills/explain` creates polished standalone HTML explainers.

@@ -30,7 +30,9 @@
   or disabled slash commands. Keep Fable model verification and use the
   configured Near context tools when available while allowing all normal customizations.
 - Treat a bare leading or trailing `Claude` or `Fable` in informal dictated text
-  as an explicit address without requiring vocative punctuation.
+  as an explicit invocation for that turn without requiring vocative punctuation.
+  A discussion or mention of Claude, Anthropic, or a Claude product is not an
+  invocation.
 - Creative authoring belongs to Claude Design with Fable 5.1 visibly selected.
   Keep the MCP bridge read-only so calling agents can inspect and extract files
   without bypassing the selected designer.
@@ -59,10 +61,11 @@
 - Bump the Codex manifest, Claude manifest, and package version together and run
   `npm test` before publishing.
 
-- In Codex, resolve the participant once per one-to-one thread. Claude and Fable
-  alias one participant; when selected by the first substantive request, that
-  participant owns every later turn, including unnamed follow-ups. Do not
-  simulate a group chat or return multiple participant voices in one thread.
+- In Codex, Claude and Fable are app/model sources, not employees or persistent
+  thread participants. Invoke them only for a turn that explicitly asks,
+  addresses, uses, or consults Claude/Fable. They never inherit unnamed
+  follow-ups or own the surrounding thread. Return relayed output with compact
+  Claude source attribution; do not present it as an employee speaking directly.
 - Shared roles come from the caller's live Codex role registry, passed as private
-  selected-role contracts. Keep participant model selection separate from role
+  selected-role contracts. Keep per-turn app/model selection separate from role
   responsibility; decline incompatible role requirements rather than downgrade.
