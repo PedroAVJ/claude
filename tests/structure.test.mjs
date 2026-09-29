@@ -7,7 +7,7 @@ import test from "node:test";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const expected = {
   name: "claude",
-  version: "0.5.24",
+  version: "0.5.25",
   url: "https://github.com/PedroAVJ/claude",
 };
 
@@ -28,7 +28,7 @@ test("unified dual-client plugin metadata is synchronized", async () => {
   }
 
   assert.equal(codex.interface.displayName, "Claude");
-  assert.equal(codex.interface.category, "AI");
+  assert.equal(codex.interface.category, "Productivity");
   assert.equal(codex.mcpServers, "./.mcp.json");
   assert.equal(codex.interface.composerIcon, "./assets/claude-plugin.svg");
   assert.equal(codex.interface.logo, "./assets/claude-plugin.svg");
