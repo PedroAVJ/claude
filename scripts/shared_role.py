@@ -1,6 +1,6 @@
 """Adapt an explicitly selected Codex role contract to the Fable runtime.
 
-Contracts are the selected-role JSON emitted by codex:sub-agents/read-roles.py.
+Contracts are the selected-role JSON emitted by claude:claude scripts/read-roles.py.
 They remain caller-owned private files, never a second role registry.
 """
 

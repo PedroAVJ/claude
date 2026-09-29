@@ -7,7 +7,7 @@ import test from "node:test";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const expected = {
   name: "claude",
-  version: "0.5.25",
+  version: "0.5.26",
   url: "https://github.com/PedroAVJ/claude",
 };
 
@@ -55,6 +55,7 @@ test("unified dual-client plugin metadata is synchronized", async () => {
     "scripts/launch-claude-design-mcp",
     "scripts/snapshot-claude-design.mjs",
     "scripts/validate-design-snapshot.mjs",
+    "skills/claude/scripts/read-roles.py",
     "vendor/claude-design-mcp/LICENSE",
     "vendor/claude-design-mcp/UPSTREAM.md",
   ]) {

@@ -87,10 +87,11 @@ Examples:
 ### Shared configured roles
 
 A per-turn app name selects its runtime; a role assigns responsibility. Resolve roles
-through `codex:sub-agents` and its read-only `read-roles.py` helper from the live
-registry. Do not bundle another role catalog, invent an unconfigured role, or
-substitute a Codex agent for a Fable role. Preserve the complete instructions,
-reasoning effort, and delegation constraints. The user's explicit per-turn
+from the live Codex registry through this skill's read-only helper,
+`python3 <claude-skill-dir>/scripts/read-roles.py --role <exact-key>`. Do not
+bundle another role catalog, invent an unconfigured role, or substitute a Codex
+agent for a Fable role. Preserve the complete instructions, reasoning effort,
+and delegation constraints. The user's explicit per-turn
 Claude invocation overrides a role's model selection for that run; other
 incompatible requirements make the Claude run decline the role, never lower the
 required effort.

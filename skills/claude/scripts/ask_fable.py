@@ -318,7 +318,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Start a new Fable conversation after a successful response.",
     )
     parser.add_argument("--role-contract", type=pathlib.Path,
-                        help="Private selected-role JSON from codex:sub-agents/read-roles.py")
+                        help="Private selected-role JSON from scripts/read-roles.py")
     parser.add_argument("--delegate-role-contract", type=pathlib.Path, action="append", default=[],
                         help="Private configured individual delegate role JSON; repeat as needed")
     args = parser.parse_args(argv)
